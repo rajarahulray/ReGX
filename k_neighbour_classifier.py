@@ -6,6 +6,7 @@ import sqlite3 as sql
 import os
 from tkinter import Label, Tk, Button, Toplevel
 import webbrowser
+from random import randint
 
 cat_dict = {
         '1' : 'programming',
@@ -30,8 +31,11 @@ Use it on your own risk"""
 rec_list = [];
 
 def callback(event):
-    webbrowser.open_new(event.widget.cget("text"));
-    print('here')
+    try:
+        webbrowser.open_new(event.widget.cget("text"));
+        print("Recomendation Showed");
+    except Exception as e:
+        print('Some Error: {}'.format(str(e)));
 
 def clickAbout():
     toplevel = Toplevel()
@@ -42,8 +46,10 @@ def clickAbout():
     label2 = Label(toplevel, text=DISCLAIMER, height=0, width=100)
     label2.configure(background = 'white');
     label2.pack();
-    for i in rec_list:
-        label3 = Label(toplevel, text = i, fg="blue", cursor="hand2");
+    
+    i = randint(0, len(rec_list));
+    label3 = Label(toplevel, text = rec_list[i], fg="blue", cursor="hand2");
+    
     label3.pack();
     label3.bind("<Button-1>", callback);
     label3.configure(background = 'white');
