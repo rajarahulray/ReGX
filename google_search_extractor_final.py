@@ -5,7 +5,7 @@ import re
 import sqlite3 as sql
 import os
 
-page = requests.get("https://www.google.co.in/search?q=Engineering")
+page = requests.get("https://www.google.co.in/search?q=Life after Engineering")
 soup = BeautifulSoup(page.content)
 links = soup.find_all("a");
 
