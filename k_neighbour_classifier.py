@@ -96,7 +96,7 @@ pre_data = pre_data.reshape(len(pre_data),-1);
 prediction = clf.predict(pre_data);
 
 '''Prediction....'''
-print(prediction);
+print("Your Recommended Category : ",cat_dict[str(prediction[0])]);
 #print(type(data_frame['abs(mrp)']));     
 #data_frame['abs(mrp)'].plot();
 #pyplot.scatter(pre_data[0],pre_data[1] , color = 'red');
