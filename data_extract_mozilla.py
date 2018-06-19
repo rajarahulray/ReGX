@@ -2,8 +2,9 @@
 
 import os
 import sqlite3 as sql
-import csv
+import json
 import re
+import sys
 #from sklearn import 
 
 '''Category dictionary'''
@@ -15,6 +16,7 @@ cat_dict = {
 '4' : ['Bollywood', 'Hollywood', 'Top Movies', 'Movies', 'Songs', 'Actors', 'Netflix', 'Trending'],
 '5' : ['Facebook', 'Twitter', 'Linkedin', 'Squarespace', 'Whatsappweb', 'Instagram', 'Telegram', 'Snapchat', 'Skype'],
 '6' : ['Amazon', 'Flipkart', 'eBay', 'Snapdeal', 'Alibaba'],
+'7' : ['Startup', 'startup', 'business', 'Business'],
 }
 ##if nothing matches from above category it is appended in others category.....need to think a little bit more..
 #others = [];
@@ -24,7 +26,7 @@ cat_dict = {
 ld = os.listdir("/home/raja/.mozilla/firefox/");
         
 for i in ld:
-    if i.endswith(".default"):
+    if i.find(".default") != -1:
         os.chdir("/home/raja/.mozilla/firefox/{}".format(i));
 
 con = sql.connect("places.sqlite");
@@ -34,16 +36,18 @@ cur = con.cursor();
 #cur.execute("select * from moz_historyvisits limit 10");
 cur.execute('select id, title, visit_count, last_visit_date from moz_places where title != "None" and length(title) <=25');
 
+#non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
 #data_list;
 #dl = [['id', 'url', 'title', 'rev_host', 'visit_count', 'hidden', 'typed', 'favicon_id', 'frecency', 'last_visit_date', 'guid', 'foreign_count', 'url_hash']];    
-dl = [['id', 'title', 'visit_count', 'last_visit_date', 'category']];    
+dl = [['id', 'title', 'visit_count', 'last_visit_date', 'category']];
 for row in cur:
-    print(row); 
+    #print(row); 
     #row.append(" ");
+    #row[1].translate(non_bmp_map);
     list_row = list(row)
     list_row.append(" ");
     dl.append(list_row);
-
+#print(dl)
 #extracting titles from fetched data to a temporary location...
 temp = [];
 for rec in dl:
@@ -52,12 +56,15 @@ for rec in dl:
 #assigning categories to the searches....
 for i in range(1, len(dl)):
     if type(dl[i][4] is str):
-        dl[i][4] = 7;
-        
+        dl[i][4] = 8;
+
+#print('_'*10,dl)        
+
 for k,v in cat_dict.items():
     for i in cat_dict[k]:
         for j in range(1,len(temp)):
             if re.search(r'\b{}\b'.format(i), temp[j]):
+                #print(re.search(r'\b{}\b'.format(i), temp[j]));
                 dl[j][4] = int(k);
             
 
@@ -66,8 +73,6 @@ temp = [];
                 
 con.close();        
 '''saving information into .csv file'''
-with open("/home/raja/Documents/output.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerows(dl) 
-
+with open("/home/raja/Documents/json_output.json", "w") as f:
+    json.dump(dl, f);
              
